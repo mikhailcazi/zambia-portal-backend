@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { CreateProjectDto } from './dto/create-project.dto';
 
 @Injectable()
 export class ProjectService {
@@ -9,9 +10,9 @@ export class ProjectService {
     return this.prisma.project.findMany();
   }
 
-  async createProject(title: string, status: string) {
+  async create(data: CreateProjectDto) {
     return this.prisma.project.create({
-      data: { title, status },
+      data: data,
     });
   }
 }

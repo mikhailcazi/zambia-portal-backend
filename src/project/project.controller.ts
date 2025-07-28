@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ProjectService } from './project.service';
+import { CreateProjectDto } from './dto/create-project.dto';
 
 @Controller('projects')
 export class ProjectController {
@@ -11,7 +12,7 @@ export class ProjectController {
   }
 
   @Post()
-  create(@Body() body: { title: string; status: string }) {
-    return this.projectService.createProject(body.title, body.status);
+  create(@Body() createProjectDto: CreateProjectDto) {
+    return this.projectService.create(createProjectDto);
   }
 }

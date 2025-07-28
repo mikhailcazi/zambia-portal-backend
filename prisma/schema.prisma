@@ -14,8 +14,42 @@ datasource db {
 }
 
 model Project {
-  id        Int      @id @default(autoincrement())
-  title     String
-  status    String
+  id                     String  @id @default(uuid())
+  projectName            String
+  contactPerson          String
+  location               String
+  status                 String
+  siteName               String
+  siteCapacity           String
+  sitePhone              String
+  siteEmail              String
+  advisorName            String
+  advisorPhone           String
+  advisorEmail           String
+  website                String
+  partners               String
+  description            String
+  problems               String
+  solution               String
+  priorities             String
+  outcomes               String
+  challenges             String
+  biodiversityHotspot    Boolean
+  protectedAreaExpansion Boolean
+  generatingRevenue      Boolean
+  communities            String
+  smmes                  String
+  org                    String
+  scalable               String
+  envImpact              String
+  socialImpact           String
+  sustainability         String
+  profitability          String
+
+  funding        Json // Stores array of { activity, amount }
+  fundingOptions String[] // Scalar string array
+  attachments    Json // Stores array of file metadata (e.g., name, url, size, etc.)
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
