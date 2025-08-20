@@ -10,6 +10,12 @@ export class ProjectService {
     return this.prisma.project.findMany();
   }
 
+  async getProjectByID(id: string) {
+    return this.prisma.project.findFirst({
+      where: { id: id },
+    });
+  }
+
   async create(data: CreateProjectDto) {
     return this.prisma.project.create({
       data: data,
