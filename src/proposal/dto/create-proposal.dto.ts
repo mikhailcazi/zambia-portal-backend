@@ -43,5 +43,8 @@ export class CreateProposalDto {
   @IsArray() funding: any;
   @IsArray() fundingOptions: string[];
   @IsArray() attachments: any;
+
+  @IsOptional() @IsArray() @IsString({ each: true }) comments?: string[];
+
   @IsOptional() @IsEnum(ProposalStatus) proposalstatus?: ProposalStatus;
 }

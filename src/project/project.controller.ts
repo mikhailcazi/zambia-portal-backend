@@ -12,7 +12,10 @@ export class ProjectController {
   }
 
   @Get(':id')
-  getProject(@Param('id') id: string) {
+  async getProject(@Param('id') id: string) {
+    await this.projectService
+      .getProjectByID(id)
+      .then((project) => console.log(project));
     return this.projectService.getProjectByID(id);
   }
 
