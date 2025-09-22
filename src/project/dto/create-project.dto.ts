@@ -1,45 +1,74 @@
 // src/project/dto/create-project.dto.ts
 
-import { IsString, IsEmail, IsBoolean, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsBoolean,
+  IsArray,
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateProjectDto {
-  @IsString() projectName: string;
-  @IsString() contactPerson: string;
-  @IsString() location: string;
-  @IsString() status: string;
-  @IsString() siteName: string;
-  @IsString() siteCapacity: string;
-  @IsString() sitePhone: string;
-  @IsEmail() siteEmail: string;
+  @IsString() @IsNotEmpty() proposalId: string;
 
-  @IsString() advisorName: string;
-  @IsString() advisorPhone: string;
-  @IsEmail() advisorEmail: string;
+  @IsString() @IsNotEmpty() projectTitle: string;
+  @IsString() @IsNotEmpty() organization: string;
+  @IsString() @IsNotEmpty() contactPerson: string;
+  @IsString() @IsNotEmpty() location: string;
+  @IsString() @IsNotEmpty() sector: string;
 
-  @IsString() website: string;
-  @IsString() partners: string;
-  @IsString() description: string;
+  @IsDateString() startDate: string;
+  @IsDateString() endDate: string;
 
-  @IsString() problems: string;
-  @IsString() solution: string;
-  @IsString() priorities: string;
-  @IsString() outcomes: string;
-  @IsString() challenges: string;
+  @IsString() @IsNotEmpty() stage: string;
 
-  @IsBoolean() biodiversityHotspot: boolean;
-  @IsBoolean() protectedAreaExpansion: boolean;
-  @IsBoolean() generatingRevenue: boolean;
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  estimatedInvestment: number;
+  @IsString() @IsNotEmpty() currency: string;
+  @IsString() @IsNotEmpty() partners: string;
 
-  @IsString() communities: string;
-  @IsString() smmes: string;
-  @IsString() org: string;
-  @IsString() scalable: string;
-  @IsString() envImpact: string;
-  @IsString() socialImpact: string;
-  @IsString() sustainability: string;
-  @IsString() profitability: string;
+  @IsArray() projectOverview: object[];
 
-  @IsArray() funding: any[];
-  @IsArray() fundingOptions: string[];
-  @IsArray() attachments: any[];
+  @IsArray() categories: string[];
+  @IsString() categoriesOther: string;
+
+  @IsArray() envImpact: string[];
+  @IsString() @IsNotEmpty() envImpactIndicator: string;
+  @IsString() @IsNotEmpty() envImpactDescription: string;
+
+  @IsArray() socialImpact: string[];
+  @IsString() @IsNotEmpty() socialImpactDescription: string;
+
+  @IsNotEmpty()
+  compliance: Record<string, string>;
+
+  @IsNotEmpty()
+  fundingOptions: Record<string, string>;
+  @IsString() fundingOptionsOther: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  totalCost: number;
+  @IsArray() fundingSought: string[];
+
+  @IsString() @IsNotEmpty() scalable: string;
+  @IsBoolean() measureableImpact: boolean;
+  @IsBoolean() annualReporting: boolean;
+  @IsBoolean() keyIndicators: boolean;
+  @IsBoolean() monitoring: boolean;
+
+  @IsArray() companyRegistration: object[];
+  @IsArray() businessPlan: object[];
+  @IsArray() financialStatements: object[];
+  @IsArray() partnerships: object[];
+  @IsArray() techStudies: object[];
+  @IsArray() other: object[];
+
+  @IsString() @IsNotEmpty() signedName: string;
+  @IsString() @IsNotEmpty() position: string;
 }

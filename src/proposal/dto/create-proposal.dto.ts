@@ -1,50 +1,66 @@
 import {
   IsString,
-  IsEmail,
-  IsBoolean,
+  IsNotEmpty,
+  IsDateString,
   IsArray,
-  IsEnum,
-  IsOptional,
+  IsBoolean,
+  IsNumber,
 } from 'class-validator';
-import { ProposalStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
 
 export class CreateProposalDto {
-  @IsString() projectName: string;
-  @IsString() contactPerson: string;
-  @IsString() location: string;
-  @IsString() status: string;
-  @IsString() siteName: string;
+  @IsString() @IsNotEmpty() projectTitle: string;
+  @IsString() @IsNotEmpty() organization: string;
+  @IsString() @IsNotEmpty() contactPerson: string;
+  @IsString() @IsNotEmpty() location: string;
+  @IsString() @IsNotEmpty() sector: string;
 
-  @IsString() siteCapacity: string;
-  @IsString() sitePhone: string;
-  @IsEmail() siteEmail: string;
-  @IsString() advisorName: string;
-  @IsString() advisorPhone: string;
-  @IsEmail() advisorEmail: string;
-  @IsString() website: string;
-  @IsString() partners: string;
-  @IsString() description: string;
-  @IsString() problems: string;
-  @IsString() solution: string;
-  @IsString() priorities: string;
-  @IsString() outcomes: string;
-  @IsString() challenges: string;
-  @IsBoolean() biodiversityHotspot: boolean;
-  @IsBoolean() protectedAreaExpansion: boolean;
-  @IsBoolean() generatingRevenue: boolean;
-  @IsString() communities: string;
-  @IsString() smmes: string;
-  @IsString() org: string;
-  @IsString() scalable: string;
-  @IsString() envImpact: string;
-  @IsString() socialImpact: string;
-  @IsString() sustainability: string;
-  @IsString() profitability: string;
-  @IsArray() funding: any;
-  @IsArray() fundingOptions: string[];
-  @IsArray() attachments: any;
+  @IsDateString() startDate: string;
+  @IsDateString() endDate: string;
 
-  @IsOptional() @IsArray() @IsString({ each: true }) comments?: string[];
+  @IsString() @IsNotEmpty() stage: string;
 
-  @IsOptional() @IsEnum(ProposalStatus) proposalstatus?: ProposalStatus;
+  @IsNumber()
+  estimatedInvestment: number;
+  @IsString() @IsNotEmpty() currency: string;
+  @IsString() @IsNotEmpty() partners: string;
+
+  @IsArray() projectOverview: object[];
+
+  @IsArray() categories: string[];
+  @IsString() categoriesOther: string;
+
+  @IsArray() envImpact: string[];
+  @IsString() @IsNotEmpty() envImpactIndicator: string;
+  @IsString() @IsNotEmpty() envImpactDescription: string;
+
+  @IsArray() socialImpact: string[];
+  @IsString() socialImpactDescription: string;
+
+  @IsNotEmpty()
+  compliance: Record<string, string>;
+
+  @IsNotEmpty()
+  fundingOptions: Record<string, string>;
+  @IsString() fundingOptionsOther: string;
+
+  @IsNumber()
+  totalCost: number;
+  @IsArray() fundingSought: string[];
+
+  @IsString() @IsNotEmpty() scalable: string;
+  @IsBoolean() measureableImpact: boolean;
+  @IsBoolean() annualReporting: boolean;
+  @IsBoolean() keyIndicators: boolean;
+  @IsBoolean() monitoring: boolean;
+
+  @IsArray() companyRegistration: object[];
+  @IsArray() businessPlan: object[];
+  @IsArray() financialStatements: object[];
+  @IsArray() partnerships: object[];
+  @IsArray() techStudies: object[];
+  @IsArray() other: object[];
+
+  @IsString() @IsNotEmpty() signedName: string;
+  @IsString() @IsNotEmpty() position: string;
 }

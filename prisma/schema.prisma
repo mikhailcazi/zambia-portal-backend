@@ -12,93 +12,116 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model Proposal {
-  id          String          @id @default(uuid())
-  proposalStatus      ProposalStatus  @default(PENDING)
+  id                   String       @id @default(uuid())
 
-  // relation to Project (only present if approved)
-  project     Project?
+  proposalStatus       ProposalStatus  @default(PENDING)
+  project              Project?
 
-  projectName            String
-  contactPerson          String
-  location               String
-  status                 String
-  siteName               String
-  siteCapacity           String
-  sitePhone              String
-  siteEmail              String
-  advisorName            String
-  advisorPhone           String
-  advisorEmail           String
-  website                String
-  partners               String
-  description            String
-  problems               String
-  solution               String
-  priorities             String
-  outcomes               String
-  challenges             String
-  biodiversityHotspot    Boolean
-  protectedAreaExpansion Boolean
-  generatingRevenue      Boolean
-  communities            String
-  smmes                  String
-  org                    String
-  scalable               String
-  envImpact              String
-  socialImpact           String
-  sustainability         String
-  profitability          String
+  projectTitle         String
+  organization         String
+  contactPerson        String
+  location             String
+  sector               String
+  startDate            DateTime
+  endDate              DateTime
+  stage                String
+  estimatedInvestment  Int
+  currency             String
+  partners             String
 
-  funding        Json
-  fundingOptions String[]
-  attachments    Json
+  projectOverview      Json
 
-  comments      Json?    // stores list of comments
+  categories           Json
+  categoriesOther      String
+
+  envImpact            Json
+  envImpactIndicator   String
+  envImpactDescription String
+
+  socialImpact         Json
+  socialImpactDescription String
+
+  compliance           Json
+  fundingOptions       Json
+  fundingOptionsOther  String
+  totalCost            Int
+  fundingSought        Json
+  scalable             String
+
+  measureableImpact    Boolean
+  annualReporting      Boolean
+  keyIndicators        Boolean
+  monitoring           Boolean
+
+  companyRegistration  Json?
+  businessPlan         Json?
+  financialStatements  Json?
+  partnerships         Json?
+  techStudies          Json?
+  other                Json?
+
+  signedName           String
+  position             String
+
+  comments             Json?    // stores list of comments
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 model Project {
   id          String   @id @default(uuid())
   proposalId  String?   @unique
   proposal    Proposal? @relation(fields: [proposalId], references: [id])
 
-  projectName            String
-  contactPerson          String
-  location               String
-  status                 String
-  siteName               String
-  siteCapacity           String
-  sitePhone              String
-  siteEmail              String
-  advisorName            String
-  advisorPhone           String
-  advisorEmail           String
-  website                String
-  partners               String
-  description            String
-  problems               String
-  solution               String
-  priorities             String
-  outcomes               String
-  challenges             String
-  biodiversityHotspot    Boolean
-  protectedAreaExpansion Boolean
-  generatingRevenue      Boolean
-  communities            String
-  smmes                  String
-  org                    String
-  scalable               String
-  envImpact              String
-  socialImpact           String
-  sustainability         String
-  profitability          String
+  projectTitle         String
+  organization         String
+  contactPerson        String
+  location             String
+  sector               String
+  startDate            DateTime
+  endDate              DateTime
+  stage                String
+  estimatedInvestment  Int
+  currency             String
+  partners             String
 
-  funding        Json // Stores array of { activity, amount }
-  fundingOptions String[] // Scalar string array
-  attachments    Json // Stores array of file metadata (e.g., name, url, size, etc.)
+  projectOverview      Json
+
+  categories           Json
+  categoriesOther      String?
+
+  envImpact            Json
+  envImpactIndicator   String
+  envImpactDescription String
+
+  socialImpact         Json
+  socialImpactDescription String
+
+  compliance           Json
+  fundingOptions       Json
+  fundingOptionsOther  String?
+  totalCost            Int
+  fundingSought        Json
+  scalable             String
+
+  measureableImpact    Boolean
+  annualReporting      Boolean
+  keyIndicators        Boolean
+  monitoring           Boolean
+
+  companyRegistration  Json?
+  businessPlan         Json?
+  financialStatements  Json?
+  partnerships         Json?
+  techStudies          Json?
+  other                Json?
+
+  signedName           String
+  position             String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
