@@ -28,53 +28,53 @@ export class ProposalService {
     });
   }
 
-  async approveProposal(proposalID: string) {
-    const proposal = await this.prisma.proposal.findUnique({
-      where: { id: proposalID },
-    });
+  // async approveProposal(proposalID: string) {
+  //   const proposal = await this.prisma.proposal.findUnique({
+  //     where: { id: proposalID },
+  //   });
 
-    if (!proposal) {
-      throw new NotFoundException('Proposal not found');
-    }
+  //   if (!proposal) {
+  //     throw new NotFoundException('Proposal not found');
+  //   }
 
-    const {
-      proposalStatus,
-      id,
-      createdAt,
-      updatedAt,
-      comments,
-      ...projectData
-    } = proposal;
+  //   const {
+  //     proposalStatus,
+  //     id,
+  //     createdAt,
+  //     updatedAt,
+  //     comments,
+  //     ...projectData
+  //   } = proposal;
 
-    // Create project using proposal fields
-    const project = await this.prisma.project.create({
-      data: {
-        ...projectData,
-        proposalId: proposal.id,
-        projectOverview: proposal.projectOverview ?? [],
-        categories: proposal.categories ?? [],
-        envImpact: proposal.envImpact ?? [],
-        socialImpact: proposal.socialImpact ?? [],
-        compliance: proposal.compliance ?? {},
-        fundingOptions: proposal.fundingOptions ?? {},
-        fundingSought: proposal.fundingSought ?? [],
-        companyRegistration: proposal.projectOverview ?? [],
-        businessPlan: proposal.businessPlan ?? [],
-        financialStatements: proposal.financialStatements ?? [],
-        partnerships: proposal.partnerships ?? [],
-        techStudies: proposal.techStudies ?? [],
-        other: proposal.projectOverview ?? [],
-      },
-    });
+  //   // Create project using proposal fields
+  //   const project = await this.prisma.project.create({
+  //     data: {
+  //       ...projectData,
+  //       proposalId: proposal.id,
+  //       projectOverview: proposal.projectOverview ?? [],
+  //       categories: proposal.categories ?? [],
+  //       envImpact: proposal.envImpact ?? [],
+  //       socialImpact: proposal.socialImpact ?? [],
+  //       compliance: proposal.compliance ?? {},
+  //       fundingOptions: proposal.fundingOptions ?? {},
+  //       fundingSought: proposal.fundingSought ?? [],
+  //       companyRegistration: proposal.projectOverview ?? [],
+  //       businessPlan: proposal.businessPlan ?? [],
+  //       financialStatements: proposal.financialStatements ?? [],
+  //       partnerships: proposal.partnerships ?? [],
+  //       techStudies: proposal.techStudies ?? [],
+  //       other: proposal.projectOverview ?? [],
+  //     },
+  //   });
 
-    // Update proposal status
-    await this.prisma.proposal.update({
-      where: { id },
-      data: { proposalStatus: ProposalStatus.APPROVED },
-    });
+  //   // Update proposal status
+  //   await this.prisma.proposal.update({
+  //     where: { id },
+  //     data: { proposalStatus: ProposalStatus.APPROVED },
+  //   });
 
-    return project;
-  }
+  //   return project;
+  // }
 
   async addComment(proposalId: string, comment: string) {
     // fetch the existing comments

@@ -76,10 +76,10 @@ export class ProposalController {
     }
   }
 
-  @Patch(':id/approve')
-  approveProposal(@Param('id') id: string) {
-    return this.proposalService.approveProposal(id);
-  }
+  // @Patch(':id/approve')
+  // approveProposal(@Param('id') id: string) {
+  //   return this.proposalService.approveProposal(id);
+  // }
 
   @Post(':id/comments')
   addComment(@Param('id') id: string, @Body('comment') comment: string) {
