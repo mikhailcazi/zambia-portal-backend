@@ -1,9 +1,23 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { Prisma, ProposalStatus } from '@prisma/client';
 import { S3Service } from 'src/s3/s3.service';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+const fileNames = [
+  'projectOverview',
+  'companyRegistration',
+  'businessPlan',
+  'financialStatements',
+  'partnerships',
+  'techStudies',
+  'other',
+];
 
 @Injectable()
 export class ProposalService {
@@ -17,9 +31,23 @@ export class ProposalService {
   }
 
   async getProposalByID(id: string) {
-    return this.prisma.proposal.findFirst({
+    const proposal = await this.prisma.proposal.findFirst({
       where: { id: id },
     });
+
+    if (!proposal) return null;
+
+    await Promise.all(
+      fileNames.map(async (fileName) => {
+        if (proposal[fileName] && proposal[fileName]['key']) {
+          const key = proposal[fileName]['key'];
+          const presignedURL = await this.s3Service.getPresignedUrl(key);
+          proposal[fileName]['presignedURL'] = presignedURL;
+        }
+      }),
+    );
+
+    return proposal;
   }
 
   async create(data: CreateProposalDto) {

@@ -4,7 +4,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'https://zambiagreeninvestmentportal.vercel.app',
+    origin: [
+      'https://zambiagreeninvestmentportal.vercel.app',
+      'http://localhost:5173',
+    ],
     credentials: true, // if using cookies/auth
   });
   await app.listen(process.env.PORT ?? 3000);
