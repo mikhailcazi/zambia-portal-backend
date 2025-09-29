@@ -1,13 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { Prisma, ProposalStatus } from '@prisma/client';
 import { S3Service } from 'src/s3/s3.service';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const fileNames = [
   'projectOverview',
@@ -26,8 +21,19 @@ export class ProposalService {
     private readonly s3Service: S3Service,
   ) {}
 
-  async getAllProposals() {
-    return this.prisma.proposal.findMany();
+  async getAllProposals(filter: {
+    showApproved: boolean;
+    showRejected: boolean;
+  }) {
+    const statuses: ProposalStatus[] = ['PENDING'];
+
+    if (filter.showApproved) statuses.push('APPROVED');
+    if (filter.showRejected) statuses.push('REJECTED');
+    return this.prisma.proposal.findMany({
+      where: {
+        proposalStatus: { in: statuses },
+      },
+    });
   }
 
   async getProposalByID(id: string) {
@@ -56,53 +62,53 @@ export class ProposalService {
     });
   }
 
-  // async approveProposal(proposalID: string) {
-  //   const proposal = await this.prisma.proposal.findUnique({
-  //     where: { id: proposalID },
-  //   });
+  async approveProposal(proposalID: string) {
+    const proposal = await this.prisma.proposal.findUnique({
+      where: { id: proposalID },
+    });
 
-  //   if (!proposal) {
-  //     throw new NotFoundException('Proposal not found');
-  //   }
+    if (!proposal) {
+      throw new NotFoundException('Proposal not found');
+    }
 
-  //   const {
-  //     proposalStatus,
-  //     id,
-  //     createdAt,
-  //     updatedAt,
-  //     comments,
-  //     ...projectData
-  //   } = proposal;
+    const {
+      proposalStatus,
+      id,
+      createdAt,
+      updatedAt,
+      comments,
+      ...projectData
+    } = proposal;
 
-  //   // Create project using proposal fields
-  //   const project = await this.prisma.project.create({
-  //     data: {
-  //       ...projectData,
-  //       proposalId: proposal.id,
-  //       projectOverview: proposal.projectOverview ?? [],
-  //       categories: proposal.categories ?? [],
-  //       envImpact: proposal.envImpact ?? [],
-  //       socialImpact: proposal.socialImpact ?? [],
-  //       compliance: proposal.compliance ?? {},
-  //       fundingOptions: proposal.fundingOptions ?? {},
-  //       fundingSought: proposal.fundingSought ?? [],
-  //       companyRegistration: proposal.projectOverview ?? [],
-  //       businessPlan: proposal.businessPlan ?? [],
-  //       financialStatements: proposal.financialStatements ?? [],
-  //       partnerships: proposal.partnerships ?? [],
-  //       techStudies: proposal.techStudies ?? [],
-  //       other: proposal.projectOverview ?? [],
-  //     },
-  //   });
+    // Create project using proposal fields
+    const project = await this.prisma.project.create({
+      data: {
+        ...projectData,
+        proposalId: proposal.id,
+        projectOverview: proposal.projectOverview ?? [],
+        categories: proposal.categories ?? [],
+        envImpact: proposal.envImpact ?? [],
+        socialImpact: proposal.socialImpact ?? [],
+        compliance: proposal.compliance ?? {},
+        fundingOptions: proposal.fundingOptions ?? {},
+        fundingSought: proposal.fundingSought ?? [],
+        companyRegistration: proposal.projectOverview ?? [],
+        businessPlan: proposal.businessPlan ?? [],
+        financialStatements: proposal.financialStatements ?? [],
+        partnerships: proposal.partnerships ?? [],
+        techStudies: proposal.techStudies ?? [],
+        other: proposal.projectOverview ?? [],
+      },
+    });
 
-  //   // Update proposal status
-  //   await this.prisma.proposal.update({
-  //     where: { id },
-  //     data: { proposalStatus: ProposalStatus.APPROVED },
-  //   });
+    // Update proposal status
+    await this.prisma.proposal.update({
+      where: { id },
+      data: { proposalStatus: ProposalStatus.APPROVED },
+    });
 
-  //   return project;
-  // }
+    return project;
+  }
 
   async addComment(proposalId: string, comment: string) {
     // fetch the existing comments

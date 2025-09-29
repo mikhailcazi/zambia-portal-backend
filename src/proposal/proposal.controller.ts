@@ -7,6 +7,7 @@ import {
   Patch,
   UseInterceptors,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -17,8 +18,15 @@ export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
 
   @Get()
-  getAll() {
-    return this.proposalService.getAllProposals();
+  getAll(
+    @Query('approved') approved?: string,
+    @Query('rejected') rejected?: string,
+  ) {
+    const showApproved = approved === 'true';
+    const showRejected = rejected === 'true';
+
+    const filters = { showApproved, showRejected };
+    return this.proposalService.getAllProposals(filters);
   }
 
   @Get(':id')
@@ -76,10 +84,10 @@ export class ProposalController {
     }
   }
 
-  // @Patch(':id/approve')
-  // approveProposal(@Param('id') id: string) {
-  //   return this.proposalService.approveProposal(id);
-  // }
+  @Patch('/:id/approve')
+  approveProposal(@Param('id') id: string) {
+    return this.proposalService.approveProposal(id);
+  }
 
   @Post(':id/comments')
   addComment(@Param('id') id: string, @Body('comment') comment: string) {
