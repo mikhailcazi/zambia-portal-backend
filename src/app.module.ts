@@ -5,8 +5,9 @@ import { HealthModule } from './health/health.module';
 import { ProjectModule } from './project/project.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ProposalModule } from './proposal/proposal.module';
-import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './admin/admin-users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,8 @@ import { S3Module } from './s3/s3.module';
     PrismaModule,
     ProposalModule,
     S3Module,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

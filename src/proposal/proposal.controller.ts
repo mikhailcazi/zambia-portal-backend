@@ -8,11 +8,14 @@ import {
   UseInterceptors,
   UploadedFiles,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('proposals')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}

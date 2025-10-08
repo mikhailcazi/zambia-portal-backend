@@ -132,3 +132,17 @@ enum ProposalStatus {
   APPROVED
   REJECTED
 }
+
+enum AdminRole {
+  REVIEWER
+}
+
+model Admin {
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  password  String
+  name      String?
+  role      AdminRole  @default(REVIEWER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
