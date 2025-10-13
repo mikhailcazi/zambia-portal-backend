@@ -62,7 +62,7 @@ export class ProposalService {
     });
   }
 
-  async approveProposal(proposalID: string) {
+  async approveProposal(proposalID: string, comment: string, user: string) {
     const proposal = await this.prisma.proposal.findUnique({
       where: { id: proposalID },
     });
@@ -101,16 +101,67 @@ export class ProposalService {
       },
     });
 
+    const updateOps: any = { proposalStatus: ProposalStatus.APPROVED };
+
+    if (comment && comment.trim() !== '') {
+      const commentData = {
+        comment,
+        user,
+        timeStamp: new Date(),
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      updateOps.comments = [
+        ...((proposal.comments as string[]) ?? []),
+        commentData,
+      ];
+    }
+
     // Update proposal status
     await this.prisma.proposal.update({
       where: { id },
-      data: { proposalStatus: ProposalStatus.APPROVED },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: updateOps,
     });
 
     return project;
   }
 
-  async addComment(proposalId: string, comment: string) {
+  async rejectProposal(proposalID: string, comment: string, user: string) {
+    const proposal = await this.prisma.proposal.findUnique({
+      where: { id: proposalID },
+    });
+
+    if (!proposal) {
+      throw new NotFoundException('Proposal not found');
+    }
+
+    const updateOps: any = { proposalStatus: ProposalStatus.REJECTED };
+
+    if (comment && comment.trim() !== '') {
+      const commentData = {
+        comment,
+        user,
+        timeStamp: new Date(),
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      updateOps.comments = [
+        ...((proposal.comments as string[]) ?? []),
+        commentData,
+      ];
+    }
+
+    await this.prisma.proposal.update({
+      where: { id: proposalID },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: updateOps,
+    });
+
+    return proposal;
+  }
+
+  async addComment(proposalId: string, comment: string, user: string) {
     // fetch the existing comments
     const proposal = await this.prisma.proposal.findUnique({
       where: { id: proposalId },
@@ -118,10 +169,16 @@ export class ProposalService {
 
     if (!proposal) throw new NotFoundException('Proposal not found');
 
+    const commentData = {
+      comment,
+      user,
+      timeStamp: new Date(),
+    };
+
     return this.prisma.proposal.update({
       where: { id: proposalId },
       data: {
-        comments: [...((proposal.comments as string[]) ?? []), comment],
+        comments: [...((proposal.comments as string[]) ?? []), commentData],
       },
     });
   }

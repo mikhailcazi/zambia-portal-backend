@@ -9,6 +9,7 @@ import {
   UploadedFiles,
   Query,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -88,12 +89,32 @@ export class ProposalController {
   }
 
   @Patch('/:id/approve')
-  approveProposal(@Param('id') id: string) {
-    return this.proposalService.approveProposal(id);
+  approveProposal(
+    @Param('id') id: string,
+    @Body('comment') comment: string,
+    @Request() req,
+  ) {
+    const user = req.user;
+    return this.proposalService.approveProposal(id, comment, user);
+  }
+
+  @Patch('/:id/reject')
+  rejectProposal(
+    @Param('id') id: string,
+    @Body('comment') comment: string,
+    @Request() req,
+  ) {
+    const user = req.user;
+    return this.proposalService.rejectProposal(id, comment, user);
   }
 
   @Post(':id/comments')
-  addComment(@Param('id') id: string, @Body('comment') comment: string) {
-    return this.proposalService.addComment(id, comment);
+  addComment(
+    @Param('id') id: string,
+    @Body('comment') comment: string,
+    @Request() req,
+  ) {
+    const user = req.user;
+    return this.proposalService.addComment(id, comment, user);
   }
 }
