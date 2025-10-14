@@ -16,11 +16,11 @@ import { CreateProposalDto } from './dto/create-proposal.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
 @Controller('proposals')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   getAll(
     @Query('approved') approved?: string,
@@ -33,6 +33,7 @@ export class ProposalController {
     return this.proposalService.getAllProposals(filters);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   getProposal(@Param('id') id: string) {
     return this.proposalService.getProposalByID(id);
@@ -88,6 +89,7 @@ export class ProposalController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('/:id/approve')
   approveProposal(
     @Param('id') id: string,
@@ -98,6 +100,7 @@ export class ProposalController {
     return this.proposalService.approveProposal(id, comment, user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('/:id/reject')
   rejectProposal(
     @Param('id') id: string,
@@ -108,6 +111,7 @@ export class ProposalController {
     return this.proposalService.rejectProposal(id, comment, user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/comments')
   addComment(
     @Param('id') id: string,
