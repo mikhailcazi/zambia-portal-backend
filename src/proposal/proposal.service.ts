@@ -4,7 +4,7 @@ import { CreateProposalDto } from './dto/create-proposal.dto';
 import { Prisma, ProposalStatus } from '@prisma/client';
 import { S3Service } from 'src/s3/s3.service';
 
-const fileNames = [
+export const fileNames = [
   'projectOverview',
   'companyRegistration',
   'businessPlan',

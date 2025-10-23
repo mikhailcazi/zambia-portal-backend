@@ -30,6 +30,7 @@ model Proposal {
   estimatedInvestment  Int
   currency             String
   partners             String
+  genderDetails        String?
 
   projectOverview      Json
 
@@ -88,7 +89,7 @@ model Project {
   estimatedInvestment  Int
   currency             String
   partners             String
-
+  genderDetails        String?
   projectOverview      Json
 
   categories           Json
