@@ -3,6 +3,10 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { Prisma, ProposalStatus } from '@prisma/client';
 import { S3Service } from 'src/s3/s3.service';
+import { promises as fs } from 'fs';
+import { join, extname } from 'path';
+
+const UPLOAD_ROOT = 'var/www/uploads';
 
 export const fileNames = [
   'projectOverview',
@@ -38,20 +42,18 @@ export class ProposalService {
 
   async getProposalByID(id: string) {
     const proposal = await this.prisma.proposal.findFirst({
-      where: { id: id },
+      where: { id },
     });
 
     if (!proposal) return null;
 
-    await Promise.all(
-      fileNames.map(async (fileName) => {
-        if (proposal[fileName] && proposal[fileName]['key']) {
-          const key = proposal[fileName]['key'];
-          const presignedURL = await this.s3Service.getPresignedUrl(key);
-          proposal[fileName]['presignedURL'] = presignedURL;
-        }
-      }),
-    );
+    for (const fileName of fileNames) {
+      if (proposal[fileName] && proposal[fileName]['key']) {
+        // replace S3 presigned URL with local file URL
+        proposal[fileName]['presignedURL'] =
+          `/files/${proposal[fileName]['key']}`;
+      }
+    }
 
     return proposal;
   }
@@ -184,12 +186,23 @@ export class ProposalService {
   }
 
   async uploadFile(file: Express.Multer.File) {
-    const key = `proposals/${Date.now()}-${file.originalname}`;
-    const url = await this.s3Service.uploadFile(
-      file.buffer,
-      key,
-      file.mimetype,
-    );
+    const filename =
+      Date.now() +
+      '-' +
+      Math.round(Math.random() * 1e9) +
+      extname(file.originalname);
+
+    const key = `proposals/${filename}`;
+    const filePath = join(UPLOAD_ROOT, 'proposals', filename);
+    console.log('Upload folder:', join(UPLOAD_ROOT, 'proposals'));
+    // ensure directory exists
+    await fs.mkdir(join(UPLOAD_ROOT, 'proposals'), { recursive: true });
+
+    // write file
+    await fs.writeFile(filePath, file.buffer);
+
+    const url = `/files/${key}`;
+
     return {
       originalName: file.originalname,
       key,

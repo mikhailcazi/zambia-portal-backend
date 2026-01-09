@@ -17,20 +17,18 @@ export class ProjectService {
 
   async getProjectByID(id: string) {
     const project = await this.prisma.project.findFirst({
-      where: { id: id },
+      where: { id },
     });
 
     if (!project) return null;
 
-    await Promise.all(
-      fileNames.map(async (fileName) => {
-        if (project[fileName] && project[fileName]['key']) {
-          const key = project[fileName]['key'];
-          const presignedURL = await this.s3Service.getPresignedUrl(key);
-          project[fileName]['presignedURL'] = presignedURL;
-        }
-      }),
-    );
+    for (const fileName of fileNames) {
+      if (project[fileName] && project[fileName]['key']) {
+        // Replace S3 presigned URL with local file URL
+        project[fileName]['presignedURL'] =
+          `/files/${project[fileName]['key']}`;
+      }
+    }
 
     return project;
   }
