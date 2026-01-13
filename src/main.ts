@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { join } from 'path';
+import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
@@ -25,7 +25,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   // Serve files from local folder
-  app.useStaticAssets('var/www/uploads', { prefix: '/files' });
+  app.use('/files', express.static('/app/uploads'));
 
   await app.listen(process.env.PORT ?? 3000);
 }

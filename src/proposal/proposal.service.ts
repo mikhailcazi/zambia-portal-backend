@@ -6,7 +6,7 @@ import { S3Service } from 'src/s3/s3.service';
 import { promises as fs } from 'fs';
 import { join, extname } from 'path';
 
-const UPLOAD_ROOT = 'var/www/uploads';
+const UPLOAD_ROOT = '/app/uploads';
 
 export const fileNames = [
   'projectOverview',
