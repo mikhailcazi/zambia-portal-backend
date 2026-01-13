@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-
+import { v5 as uuidv5 } from 'uuid';
+const NAMESPACE = '7d444840-9dc0-11d1-b245-5ffdce74fad2';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -16,8 +17,12 @@ async function main() {
   });
 
   for (const proposal of dummyProposals) {
-    await prisma.proposal.create({
-      data: proposal as unknown as Prisma.ProposalCreateInput,
+    const id = uuidv5(proposal.projectTitle + proposal.organization, NAMESPACE);
+
+    await prisma.proposal.upsert({
+      where: { id }, // now using unique id
+      update: {},
+      create: { id, ...proposal } as unknown as Prisma.ProposalCreateInput,
     });
   }
 }

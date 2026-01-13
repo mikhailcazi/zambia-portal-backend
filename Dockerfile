@@ -19,5 +19,5 @@ COPY . .
 RUN npm run build
 
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ \"$RUN_SEEDS\" = \"true\" ]; then npx prisma db seed; fi && node dist/src/main.js"]
 
