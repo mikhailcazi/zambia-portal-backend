@@ -8,6 +8,7 @@ import { ProposalModule } from './proposal/proposal.module';
 import { S3Module } from './s3/s3.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './admin/admin-users.module';
+import { ProjectOwnerModule } from './project-owner/project-owner.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersModule } from './admin/admin-users.module';
     S3Module,
     AuthModule,
     UsersModule,
+    ProjectOwnerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

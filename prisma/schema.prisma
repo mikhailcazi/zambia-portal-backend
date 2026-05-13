@@ -33,6 +33,8 @@ model ProjectOwner {
   updatedAt          DateTime   @updatedAt
   submittedProposals Proposal[]
   approvedProjects   Project[]
+
+  deletedAt DateTime? // soft delete field
 }
 
 enum ProposalStatus {
