@@ -2,7 +2,7 @@ import { IsString, IsOptional } from 'class-validator';
 
 export class CreateProjectOwnerDto {
   @IsString()
-  username!: string;
+  email!: string;
 
   @IsString()
   password!: string;

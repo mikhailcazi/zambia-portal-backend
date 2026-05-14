@@ -7,8 +7,9 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { ProposalModule } from './proposal/proposal.module';
 import { S3Module } from './s3/s3.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './admin/admin-users.module';
+import { AdminUsersModule } from './admin-users/admin-users.module';
 import { ProjectOwnerModule } from './project-owner/project-owner.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -18,8 +19,9 @@ import { ProjectOwnerModule } from './project-owner/project-owner.module';
     ProposalModule,
     S3Module,
     AuthModule,
-    UsersModule,
+    AdminUsersModule,
     ProjectOwnerModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
