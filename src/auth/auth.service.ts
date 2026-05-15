@@ -3,6 +3,7 @@ import { AdminUsersService } from '../admin-users/admin-users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
+import { Admin, ProjectOwner } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateAdmin(username: string, pass: string): Promise<any> {
+  async validateAdmin(username: string, pass: string): Promise<Admin | null> {
     const admin = await this.adminUsersService.findOne(username);
     if (!admin) return null;
 
@@ -23,10 +24,10 @@ export class AuthService {
     return admin;
   }
 
-  async adminLogin(user: any) {
+  adminLogin(user: Admin) {
     const payload = {
       username: user.username,
-      sub: user.userId,
+      sub: user.id,
       role: 'ADMIN',
     };
     return {
@@ -34,7 +35,10 @@ export class AuthService {
     };
   }
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<ProjectOwner | null> {
     const user = await this.usersService.findOne(email);
     if (!user) return null;
 
@@ -45,10 +49,10 @@ export class AuthService {
     return user;
   }
 
-  async userLogin(user: any) {
+  userLogin(user: ProjectOwner) {
     const payload = {
       email: user.email,
-      sub: user.userId,
+      sub: user.id,
       role: 'USER',
     };
     return {

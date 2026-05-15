@@ -15,9 +15,14 @@ import { UpdateProjectOwnerDto } from './dto/update-project-owner.dto';
 export class ProjectOwnerController {
   constructor(private readonly projectOwnerService: ProjectOwnerService) {}
 
-  @Post()
-  create(@Body() createProjectOwnerDto: CreateProjectOwnerDto) {
+  @Post('register')
+  register(@Body() createProjectOwnerDto: CreateProjectOwnerDto) {
     return this.projectOwnerService.create(createProjectOwnerDto);
+  }
+
+  @Post('verify')
+  verify(@Body('token') token: string) {
+    return this.projectOwnerService.verify(token);
   }
 
   @Get()

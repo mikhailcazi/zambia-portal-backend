@@ -10,19 +10,14 @@ export class AuthController {
 
   @UseGuards(AdminLocalAuthGuard)
   @Post('admin/login')
-  async login(@Request() req) {
+  login(@Request() req) {
     return this.authService.adminLogin(req.user);
   }
 
   @UseGuards(UserLocalAuthGuard)
   @Post('login')
-  async userLogin(@Request() req) {
+  userLogin(@Request() req) {
     return this.authService.userLogin(req.user);
-  }
-
-  @Post('register')
-  async userRegister(@Request() req) {
-    // return this.project.userRegister(req.user);
   }
 
   // @Post('logout')

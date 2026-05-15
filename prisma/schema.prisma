@@ -34,6 +34,10 @@ model ProjectOwner {
   submittedProposals Proposal[]
   approvedProjects   Project[]
 
+  isVerified     Boolean   @default(false)
+  verifyToken    String?
+  verifyTokenExp DateTime?
+
   deletedAt DateTime? // soft delete field
 }
 

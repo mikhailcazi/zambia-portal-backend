@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { AdminUsersModule } from './admin-users/admin-users.module';
 import { ProjectOwnerModule } from './project-owner/project-owner.module';
 import { UsersModule } from './users/users.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from './users/users.module';
     AdminUsersModule,
     ProjectOwnerModule,
     UsersModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

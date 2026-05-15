@@ -2,6 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { Admin } from '@prisma/client';
 
 @Injectable()
 export class AdminLocalStrategy extends PassportStrategy(
@@ -12,7 +13,7 @@ export class AdminLocalStrategy extends PassportStrategy(
     super();
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  async validate(username: string, password: string): Promise<Admin> {
     console.log('JWT payload received in strategy:', username, password);
 
     const user = await this.authService.validateAdmin(username, password);
