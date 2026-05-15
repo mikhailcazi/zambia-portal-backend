@@ -11,7 +11,7 @@ import { ProjectOwnerService } from './project-owner.service';
 import { CreateProjectOwnerDto } from './dto/create-project-owner.dto';
 import { UpdateProjectOwnerDto } from './dto/update-project-owner.dto';
 
-@Controller('project-owner')
+@Controller('user')
 export class ProjectOwnerController {
   constructor(private readonly projectOwnerService: ProjectOwnerService) {}
 

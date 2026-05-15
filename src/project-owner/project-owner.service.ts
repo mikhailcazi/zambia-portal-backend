@@ -21,7 +21,7 @@ export class ProjectOwnerService {
       data: {
         ...createProjectOwnerDto,
         password: hashedPassword,
-        isVerified: false,
+        isVerified: true,
         verifyToken: token,
         verifyTokenExp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
       },
@@ -29,9 +29,7 @@ export class ProjectOwnerService {
 
     // const link = `https://yourapp.com/auth/verify?token=${token}`;
 
-    const { password, ...safeOwner } = owner;
-
-    return safeOwner;
+    return { email: owner.email, createdAt: owner.createdAt };
   }
 
   async verify(token: string) {

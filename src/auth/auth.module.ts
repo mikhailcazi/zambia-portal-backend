@@ -8,6 +8,7 @@ import { AdminLocalStrategy } from './strategies/admin-local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { UsersModule } from 'src/users/users.module';
+import { UserLocalStrategy } from './strategies/user-local.strategy';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { UsersModule } from 'src/users/users.module';
       signOptions: { expiresIn: '3600s' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, AdminLocalStrategy],
+  providers: [AuthService, JwtStrategy, AdminLocalStrategy, UserLocalStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
