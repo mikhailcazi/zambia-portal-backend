@@ -6,9 +6,13 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async findOne(email: string) {
-    return await this.prisma.projectOwner.findFirst({
+    return await this.prisma.user.findUnique({
       where: {
         email: email,
+      },
+      include: {
+        projectOwner: true,
+        admin: true,
       },
     });
   }

@@ -1,29 +1,10 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProjectOwnerService } from './project-owner.service';
-import { CreateProjectOwnerDto } from './dto/create-project-owner.dto';
 import { UpdateProjectOwnerDto } from './dto/update-project-owner.dto';
 
 @Controller('user')
 export class ProjectOwnerController {
   constructor(private readonly projectOwnerService: ProjectOwnerService) {}
-
-  @Post('register')
-  register(@Body() createProjectOwnerDto: CreateProjectOwnerDto) {
-    return this.projectOwnerService.create(createProjectOwnerDto);
-  }
-
-  @Post('verify')
-  verify(@Body('token') token: string) {
-    return this.projectOwnerService.verify(token);
-  }
 
   @Get()
   findAll() {
@@ -47,4 +28,14 @@ export class ProjectOwnerController {
   remove(@Param('id') id: string) {
     return this.projectOwnerService.remove(+id);
   }
+
+  // @Post('register')
+  // register(@Body() createProjectOwnerDto: CreateProjectOwnerDto) {
+  //   return this.projectOwnerService.create(createProjectOwnerDto);
+  // }
+
+  // @Post('verify')
+  // verify(@Body('token') token: string) {
+  //   return this.projectOwnerService.verify(token);
+  // }
 }

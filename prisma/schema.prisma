@@ -7,24 +7,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 enum AdminRole {
   REVIEWER
 }
 
+model User {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  password    String
+  role        UserRole  @default(USER)
+  createdAt   DateTime  @default(now())
+  lastLoginAt DateTime?
+
+  isVerified     Boolean   @default(false)
+  verifyToken    String?
+  verifyTokenExp DateTime?
+
+  admin        Admin?
+  projectOwner ProjectOwner?
+}
+
 model Admin {
   id        Int       @id @default(autoincrement())
-  username  String    @unique
-  password  String
-  name      String?
-  role      AdminRole @default(REVIEWER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  userId    Int       @unique
+  user      User      @relation(fields: [userId], references: [id])
+  adminRole AdminRole @default(REVIEWER)
 }
 
 model ProjectOwner {
   id                 Int        @id @default(autoincrement())
-  email              String     @unique
-  password           String
+  userId             Int        @unique
+  user               User       @relation(fields: [userId], references: [id])
   name               String
   organization       String
   location           String?
@@ -33,10 +51,6 @@ model ProjectOwner {
   updatedAt          DateTime   @updatedAt
   submittedProposals Proposal[]
   approvedProjects   Project[]
-
-  isVerified     Boolean   @default(false)
-  verifyToken    String?
-  verifyTokenExp DateTime?
 
   deletedAt DateTime? // soft delete field
 }

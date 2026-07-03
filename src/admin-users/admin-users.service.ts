@@ -5,10 +5,18 @@ import { PrismaService } from 'prisma/prisma.service';
 export class AdminUsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(username: string) {
+  // async findOneUser(email: string) {
+  //   return await this.prisma.user.findFirst({
+  //     where: {
+  //       email: email,
+  //     },
+  //   });
+  // }
+
+  async findOne(userId: number) {
     return await this.prisma.admin.findFirst({
       where: {
-        username: username,
+        userId: userId,
       },
     });
   }

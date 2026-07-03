@@ -5,13 +5,14 @@ const NAMESPACE = '7d444840-9dc0-11d1-b245-5ffdce74fad2';
 const prisma = new PrismaClient();
 
 async function main() {
-  const password1 = (await bcrypt.hash('password', 10)) as string;
-  const password2 = (await bcrypt.hash('password', 10)) as string;
+  console.log('Seed started');
+  const password1 = await bcrypt.hash('password', 10);
+  const password2 = await bcrypt.hash('password', 10);
 
-  await prisma.admin.createMany({
+  await prisma.user.createMany({
     data: [
-      { username: 'admin', password: password1, role: 'REVIEWER' },
-      { username: 'john_doe', password: password2, role: 'REVIEWER' },
+      { email: 'admin1@seczambia.com', password: password1, role: 'ADMIN' },
+      { email: 'admin2@seczambia.com', password: password2, role: 'ADMIN' },
     ],
     skipDuplicates: true,
   });

@@ -4,11 +4,12 @@ import { AuthController } from './auth.controller';
 import { AdminUsersModule } from 'src/admin-users/admin-users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { AdminLocalStrategy } from './strategies/admin-local.strategy';
+// import { AdminLocalStrategy } from './strategies/admin-local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { UsersModule } from 'src/users/users.module';
 import { UserLocalStrategy } from './strategies/user-local.strategy';
+import { PrismaModule } from 'prisma/prisma.module';
 
 @Module({
   imports: [
@@ -19,8 +20,9 @@ import { UserLocalStrategy } from './strategies/user-local.strategy';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '3600s' },
     }),
+    PrismaModule,
   ],
-  providers: [AuthService, JwtStrategy, AdminLocalStrategy, UserLocalStrategy],
+  providers: [AuthService, JwtStrategy, UserLocalStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
