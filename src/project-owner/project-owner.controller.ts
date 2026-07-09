@@ -24,10 +24,10 @@ export class ProjectOwnerController {
     return this.projectOwnerService.update(+id, updateProjectOwnerDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectOwnerService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.projectOwnerService.remove(+id);
+  // }
 
   // @Post('register')
   // register(@Body() createProjectOwnerDto: CreateProjectOwnerDto) {

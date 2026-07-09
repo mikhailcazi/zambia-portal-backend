@@ -25,7 +25,7 @@ export class AuthController {
     return this.authService.create(createProjectOwnerDto);
   }
 
-  @Post('verify')
+  @Post('verify-email')
   verify(@Body('token') token: string) {
     return this.authService.verify(token);
   }

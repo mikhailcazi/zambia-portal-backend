@@ -23,12 +23,12 @@ export class ProjectOwnerService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.projectOwner.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
-  }
+  // remove(id: number) {
+  //   return this.prisma.projectOwner.update({
+  //     where: { id },
+  //     data: { deletedAt: new Date() },
+  //   });
+  // }
 
   // async create(createProjectOwnerDto: CreateProjectOwnerDto) {
   //   const token = randomBytes(32).toString('hex');

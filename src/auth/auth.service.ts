@@ -7,6 +7,7 @@ import { CreateProjectOwnerDto } from 'src/project-owner/dto/create-project-owne
 import { randomBytes } from 'crypto';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     private prisma: PrismaService,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async validate(
@@ -61,7 +63,7 @@ export class AuthService {
           email: createProjectOwnerDto.email,
           password: hashedPassword,
           role: UserRole.USER,
-          isVerified: true, // TODO: change when email setup
+          isVerified: false,
           verifyToken: token,
           verifyTokenExp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
         },
@@ -77,10 +79,19 @@ export class AuthService {
         },
       });
 
+      await this.mailService.sendVerificationEmail(
+        user.email,
+        user.verifyToken as string,
+      );
+
+      console.log({ message: 'Email sent' });
+
       return { user, owner };
     });
 
     return {
+      message:
+        'Registration successful. Please check your email to verify your account.',
       email: result.user.email,
       createdAt: result.owner.createdAt,
     };

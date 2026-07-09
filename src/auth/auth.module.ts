@@ -10,12 +10,14 @@ import { jwtConstants } from './constants';
 import { UsersModule } from 'src/users/users.module';
 import { UserLocalStrategy } from './strategies/user-local.strategy';
 import { PrismaModule } from 'prisma/prisma.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
     AdminUsersModule,
     UsersModule,
     PassportModule,
+    MailModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '3600s' },
