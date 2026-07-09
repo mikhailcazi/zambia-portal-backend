@@ -28,6 +28,8 @@ model User {
   verifyToken    String?
   verifyTokenExp DateTime?
 
+  deletedAt DateTime? // soft delete field
+
   admin        Admin?
   projectOwner ProjectOwner?
 }
@@ -51,8 +53,6 @@ model ProjectOwner {
   updatedAt          DateTime   @updatedAt
   submittedProposals Proposal[]
   approvedProjects   Project[]
-
-  deletedAt DateTime? // soft delete field
 }
 
 enum ProposalStatus {
