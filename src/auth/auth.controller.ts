@@ -30,6 +30,10 @@ export class AuthController {
     return this.authService.verify(token);
   }
 
+  @Post('resend-email')
+  resendLink(@Body('token') token: string) {
+    return this.authService.resendEmail(token);
+  }
   // @Post('logout')
   // logout() {
   //   return { message: 'Logged out' };

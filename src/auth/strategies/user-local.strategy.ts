@@ -19,9 +19,11 @@ export class UserLocalStrategy extends PassportStrategy(
     const user = await this.authService.validate(email, password);
     console.log('User: ', user);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid credentials');
     } else if (user.role === UserRole.USER && !user.isVerified) {
-      throw new UnauthorizedException('Please verify email first');
+      throw new UnauthorizedException(
+        'Your account has not been verified. Please check your email inbox for the verification link.',
+      );
     }
 
     return user;

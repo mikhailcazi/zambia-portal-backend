@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { UserWithRelations } from 'src/users/users.types';
@@ -50,8 +50,6 @@ export class AuthService {
   }
 
   async create(createProjectOwnerDto: CreateProjectOwnerDto) {
-    const token = randomBytes(32).toString('hex');
-
     const hashedPassword = await bcrypt.hash(
       createProjectOwnerDto.password,
       10,
@@ -64,8 +62,6 @@ export class AuthService {
           password: hashedPassword,
           role: UserRole.USER,
           isVerified: false,
-          verifyToken: token,
-          verifyTokenExp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
         },
       });
 
@@ -79,15 +75,20 @@ export class AuthService {
         },
       });
 
-      await this.mailService.sendVerificationEmail(
-        user.email,
-        user.verifyToken as string,
-      );
-
-      console.log({ message: 'Email sent' });
-
       return { user, owner };
     });
+
+    const token = this.jwtService.sign(
+      { userId: result.user.id, email: result.user.email },
+      {
+        secret: process.env.EMAIL_VERIFICATION_SECRET,
+        expiresIn: '24h',
+      },
+    );
+
+    await this.mailService.sendVerificationEmail(result.user.email, token);
+
+    console.log({ message: 'Email sent' });
 
     return {
       message:
@@ -98,23 +99,81 @@ export class AuthService {
   }
 
   async verify(token: string) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        verifyToken: token,
-        verifyTokenExp: { gt: new Date() },
-      },
+    let payload: { userId: number; email: string };
+
+    try {
+      payload = this.jwtService.verify(token, {
+        secret: process.env.EMAIL_VERIFICATION_SECRET,
+      });
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new BadRequestException({
+          code: 'TOKEN_EXPIRED',
+          message: 'This verification link has expired.',
+        });
+      }
+
+      if (error instanceof JsonWebTokenError) {
+        throw new BadRequestException('Invalid verification link.');
+      }
+      throw error;
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.userId },
     });
 
-    if (!user) throw new BadRequestException('Invalid token');
+    if (!user) {
+      throw new BadRequestException('Invalid verification link.');
+    }
 
-    return this.prisma.user.update({
+    if (user.isVerified) {
+      return {
+        message: 'Your account was already verified. Please log in.',
+      };
+    }
+
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         isVerified: true,
-        verifyToken: null,
-        verifyTokenExp: null,
       },
     });
+
+    return {
+      message: 'Your account has been verified successfully.',
+    };
+  }
+
+  async resendEmail(token: string) {
+    const payload: { userId: number; email: string } =
+      this.jwtService.decode(token);
+
+    console.log(payload);
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid verification link.');
+    }
+
+    const newToken = this.jwtService.sign(
+      { userId: payload.userId, email: payload.email },
+      {
+        secret: process.env.EMAIL_VERIFICATION_SECRET,
+        expiresIn: '24h',
+      },
+    );
+
+    await this.mailService.sendVerificationEmail(payload.email, newToken);
+
+    console.log({ message: 'Email sent' });
+
+    return {
+      message: 'Email resent!',
+    };
   }
   // async validateAdmin(email: string, pass: string): Promise<Admin | null> {
   //   const admin = await this.adminUsersService.findOne(email);
