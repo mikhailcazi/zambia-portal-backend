@@ -2,7 +2,7 @@ import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProjectOwnerService } from './project-owner.service';
 import { UpdateProjectOwnerDto } from './dto/update-project-owner.dto';
 
-@Controller('user')
+@Controller('project-owner')
 export class ProjectOwnerController {
   constructor(private readonly projectOwnerService: ProjectOwnerService) {}
 
