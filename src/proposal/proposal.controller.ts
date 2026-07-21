@@ -17,6 +17,7 @@ import { CreateProposalDto } from './dto/create-proposal.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JwtRequest } from 'src/users/users.types';
+import { GetProposalsDto } from './get-proposal.dto';
 
 @Controller('proposals')
 export class ProposalController {
@@ -24,15 +25,8 @@ export class ProposalController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  getAll(
-    @Query('approved') approved?: string,
-    @Query('rejected') rejected?: string,
-  ) {
-    const showApproved = approved === 'true';
-    const showRejected = rejected === 'true';
-
-    const filters = { showApproved, showRejected };
-    return this.proposalService.getAllProposals(filters);
+  getAll(@Query() query: GetProposalsDto) {
+    return this.proposalService.getAllProposals(query.status);
   }
 
   @UseGuards(JwtAuthGuard)

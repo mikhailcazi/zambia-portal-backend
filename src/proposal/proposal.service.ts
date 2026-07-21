@@ -25,17 +25,11 @@ export class ProposalService {
     private readonly s3Service: S3Service,
   ) {}
 
-  async getAllProposals(filter: {
-    showApproved: boolean;
-    showRejected: boolean;
-  }) {
-    const statuses: ProposalStatus[] = ['PENDING'];
-
-    if (filter.showApproved) statuses.push('APPROVED');
-    if (filter.showRejected) statuses.push('REJECTED');
+  async getAllProposals(status?: ProposalStatus) {
     return this.prisma.proposal.findMany({
-      where: {
-        proposalStatus: { in: statuses },
+      where: status ? { proposalStatus: status } : {},
+      include: {
+        projectOwner: true,
       },
     });
   }
