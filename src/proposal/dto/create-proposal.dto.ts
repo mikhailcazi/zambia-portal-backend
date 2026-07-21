@@ -5,12 +5,14 @@ import {
   IsArray,
   IsBoolean,
   IsNumber,
+  IsEmail,
+  IsOptional,
+  IsUrl,
 } from 'class-validator';
 
 export class CreateProposalDto {
   @IsString() @IsNotEmpty() projectTitle!: string;
   @IsString() @IsNotEmpty() organization!: string;
-  @IsString() @IsNotEmpty() contactPerson!: string;
   @IsString() @IsNotEmpty() location!: string;
   @IsString() @IsNotEmpty() sector!: string;
 
@@ -22,6 +24,11 @@ export class CreateProposalDto {
   @IsNumber() estimatedInvestment!: number;
   @IsString() @IsNotEmpty() currency!: string;
   @IsString() @IsNotEmpty() partners!: string;
+
+  @IsString() contactName!: string;
+  @IsEmail() contactEmail!: string;
+  @IsOptional() @IsString() contactPhone?: string;
+  @IsOptional() @IsUrl() website?: string;
 
   @IsArray() projectOverview!: object[];
 

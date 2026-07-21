@@ -67,7 +67,6 @@ model Proposal {
 
   projectTitle        String
   organization        String
-  contactPerson       String
   location            String
   sector              String
   startDate           DateTime
@@ -77,6 +76,11 @@ model Proposal {
   currency            String
   partners            String
   genderDetails       String?
+
+  contactName   String
+  contactEmail  String
+  contactPhone  String?
+  website       String?
 
   projectOverview Json
 
@@ -127,7 +131,6 @@ model Project {
 
   projectTitle        String
   organization        String
-  contactPerson       String
   location            String
   sector              String
   startDate           DateTime
@@ -137,6 +140,12 @@ model Project {
   currency            String
   partners            String
   genderDetails       String?
+
+  contactName   String
+  contactEmail  String
+  contactPhone  String?
+  website       String?
+
   projectOverview     Json
 
   categories      Json
