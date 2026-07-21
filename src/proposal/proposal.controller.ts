@@ -10,11 +10,13 @@ import {
   Query,
   UseGuards,
   Request,
+  Req,
 } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtRequest } from 'src/users/users.types';
 
 @Controller('proposals')
 export class ProposalController {
@@ -34,11 +36,18 @@ export class ProposalController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('user')
+  getProposalsByUser(@Req() req: JwtRequest) {
+    return this.proposalService.getByUserId(req.user.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   getProposal(@Param('id') id: string) {
     return this.proposalService.getProposalByID(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -52,6 +61,7 @@ export class ProposalController {
     ]),
   )
   async create(
+    @Req() req: JwtRequest,
     @UploadedFiles()
     files: {
       projectOverview?: Express.Multer.File[];
@@ -83,7 +93,7 @@ export class ProposalController {
         }
       }
 
-      return this.proposalService.create(data);
+      return this.proposalService.create(req.user.sub, data);
     } catch (err) {
       console.log(err);
     }

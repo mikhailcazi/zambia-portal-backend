@@ -1,4 +1,19 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateProjectOwnerDto } from './create-project-owner.dto';
+import { IsOptional, IsString } from 'class-validator';
 
-export class UpdateProjectOwnerDto extends PartialType(CreateProjectOwnerDto) {}
+export class UpdateProjectOwnerDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  organization?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  position?: string;
+}

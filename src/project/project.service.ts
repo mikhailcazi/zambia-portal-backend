@@ -33,6 +33,21 @@ export class ProjectService {
     return project;
   }
 
+  async getByUserId(userId: number) {
+    const result = await this.prisma.project.findMany({
+      where: {
+        projectOwner: {
+          userId,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    console.log('Result: ', result);
+    return result;
+  }
+
   async create(data: CreateProjectDto) {
     return this.prisma.project.create({
       data: data,

@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 
 export type UserWithRelations = Prisma.UserGetPayload<{
   include: {
@@ -6,3 +6,13 @@ export type UserWithRelations = Prisma.UserGetPayload<{
     admin: true;
   };
 }>;
+
+export interface JwtUser {
+  sub: number;
+  email: string;
+  role: UserRole;
+}
+
+export interface JwtRequest extends Request {
+  user: JwtUser;
+}

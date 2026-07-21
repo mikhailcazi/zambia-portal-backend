@@ -16,9 +16,9 @@ export class ProjectOwnerService {
     });
   }
 
-  update(id: number, updateProjectOwnerDto: UpdateProjectOwnerDto) {
+  update(userId: number, updateProjectOwnerDto: UpdateProjectOwnerDto) {
     return this.prisma.projectOwner.update({
-      where: { id },
+      where: { userId: userId },
       data: updateProjectOwnerDto,
     });
   }

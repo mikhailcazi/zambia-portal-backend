@@ -58,75 +58,117 @@ export class ProposalService {
     return proposal;
   }
 
-  async create(data: CreateProposalDto) {
+  async getByUserId(userId: number) {
+    const result = await this.prisma.proposal.findMany({
+      where: {
+        projectOwner: {
+          userId,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    console.log('Result: ', result);
+    return result;
+    return this.prisma.proposal.findMany({
+      where: {
+        projectOwner: {
+          userId,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async create(userId: number, data: CreateProposalDto) {
+    const projectOwner = await this.prisma.projectOwner.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    if (!projectOwner) {
+      throw new NotFoundException('Project owner profile not found.');
+    }
+
     return this.prisma.proposal.create({
-      data: data,
+      data: {
+        ...data,
+        projectOwner: {
+          connect: {
+            id: projectOwner.id,
+          },
+        },
+      },
     });
   }
 
   async approveProposal(proposalID: string, comment: string, user: string) {
-    const proposal = await this.prisma.proposal.findUnique({
-      where: { id: proposalID },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const proposal = await tx.proposal.findUnique({
+        where: { id: proposalID },
+      });
 
-    if (!proposal) {
-      throw new NotFoundException('Proposal not found');
-    }
+      if (!proposal) {
+        throw new NotFoundException('Proposal not found');
+      }
 
-    const {
-      proposalStatus,
-      id,
-      createdAt,
-      updatedAt,
-      comments,
-      ...projectData
-    } = proposal;
+      const {
+        proposalStatus,
+        id,
+        createdAt,
+        updatedAt,
+        comments,
+        ...projectData
+      } = proposal;
 
-    // Create project using proposal fields
-    const project = await this.prisma.project.create({
-      data: {
-        ...projectData,
-        proposalId: proposal.id,
-        projectOverview: proposal.projectOverview ?? [],
-        categories: proposal.categories ?? [],
-        envImpact: proposal.envImpact ?? [],
-        socialImpact: proposal.socialImpact ?? [],
-        compliance: proposal.compliance ?? {},
-        fundingOptions: proposal.fundingOptions ?? {},
-        fundingSought: proposal.fundingSought ?? [],
-        companyRegistration: proposal.projectOverview ?? [],
-        businessPlan: proposal.businessPlan ?? [],
-        financialStatements: proposal.financialStatements ?? [],
-        partnerships: proposal.partnerships ?? [],
-        techStudies: proposal.techStudies ?? [],
-        other: proposal.projectOverview ?? [],
-      },
-    });
-
-    const updateOps: any = { proposalStatus: ProposalStatus.APPROVED };
-
-    if (comment && comment.trim() !== '') {
-      const commentData = {
-        comment,
-        user,
-        timeStamp: new Date(),
+      const updateOps: Prisma.ProposalUpdateInput = {
+        proposalStatus: ProposalStatus.APPROVED,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      updateOps.comments = [
-        ...((proposal.comments as string[]) ?? []),
-        commentData,
-      ];
-    }
+      if (comment?.trim()) {
+        updateOps.comments = [
+          ...((proposal.comments as any[]) ?? []),
+          {
+            comment,
+            user,
+            timeStamp: new Date(),
+          },
+        ];
+      }
 
-    // Update proposal status
-    await this.prisma.proposal.update({
-      where: { id },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      data: updateOps,
+      const project = await tx.project.create({
+        data: {
+          ...projectData,
+          proposalId: proposal.id,
+          projectOwnerId: proposal.projectOwnerId,
+
+          projectOverview: proposal.projectOverview ?? [],
+          categories: proposal.categories ?? [],
+          envImpact: proposal.envImpact ?? [],
+          socialImpact: proposal.socialImpact ?? [],
+          compliance: proposal.compliance ?? {},
+          fundingOptions: proposal.fundingOptions ?? {},
+          fundingSought: proposal.fundingSought ?? [],
+          companyRegistration: proposal.companyRegistration ?? [],
+          businessPlan: proposal.businessPlan ?? [],
+          financialStatements: proposal.financialStatements ?? [],
+          partnerships: proposal.partnerships ?? [],
+          techStudies: proposal.techStudies ?? [],
+          other: proposal.other ?? [],
+        },
+      });
+
+      await tx.proposal.update({
+        where: { id: proposal.id },
+        data: updateOps,
+      });
+
+      return project;
     });
-
-    return project;
   }
 
   async rejectProposal(proposalID: string, comment: string, user: string) {

@@ -1,7 +1,7 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail } from 'class-validator';
 
 export class CreateProjectOwnerDto {
-  @IsString()
+  @IsEmail()
   email!: string;
 
   @IsString()

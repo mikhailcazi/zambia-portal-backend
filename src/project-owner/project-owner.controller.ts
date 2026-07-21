@@ -1,6 +1,18 @@
-import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ProjectOwnerService } from './project-owner.service';
 import { UpdateProjectOwnerDto } from './dto/update-project-owner.dto';
+import { UserRole } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtRequest } from 'src/users/users.types';
 
 @Controller('project-owner')
 export class ProjectOwnerController {
@@ -16,12 +28,14 @@ export class ProjectOwnerController {
     return this.projectOwnerService.findOne(+id);
   }
 
-  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @Patch('/profile')
   update(
-    @Param('id') id: string,
+    @Req() req: JwtRequest,
     @Body() updateProjectOwnerDto: UpdateProjectOwnerDto,
   ) {
-    return this.projectOwnerService.update(+id, updateProjectOwnerDto);
+    console.log(req.user, updateProjectOwnerDto);
+    return this.projectOwnerService.update(req.user.sub, updateProjectOwnerDto);
   }
 
   // @Delete(':id')
