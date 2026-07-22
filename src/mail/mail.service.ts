@@ -29,6 +29,7 @@ export class MailService implements OnModuleInit {
       const result = await this.mailerService.sendMail({
         to: email,
         subject: 'Verify your email',
+        from: process.env.MAIL_FROM,
         html: `
           <h2>Welcome!</h2>
           <p>Thanks for registering.</p>
