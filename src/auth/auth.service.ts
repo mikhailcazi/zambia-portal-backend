@@ -86,7 +86,11 @@ export class AuthService {
       },
     );
 
-    await this.mailService.sendVerificationEmail(result.user.email, token);
+    try {
+      await this.mailService.sendVerificationEmail(result.user.email, token);
+    } catch (err) {
+      console.error(err);
+    }
 
     console.log({ message: 'Email sent' });
 

@@ -52,12 +52,13 @@ export class ProposalService {
     return proposal;
   }
 
-  async getByUserId(userId: number) {
+  async getByUserId(userId: number, status?: ProposalStatus) {
     const result = await this.prisma.proposal.findMany({
       where: {
         projectOwner: {
           userId,
         },
+        proposalStatus: status,
       },
       orderBy: {
         createdAt: 'desc',

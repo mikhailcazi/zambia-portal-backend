@@ -31,8 +31,8 @@ export class ProposalController {
 
   @UseGuards(JwtAuthGuard)
   @Get('user')
-  getProposalsByUser(@Req() req: JwtRequest) {
-    return this.proposalService.getByUserId(req.user.sub);
+  getProposalsByUser(@Req() req: JwtRequest, @Query() query: GetProposalsDto) {
+    return this.proposalService.getByUserId(req.user.sub, query.status);
   }
 
   @UseGuards(JwtAuthGuard)
