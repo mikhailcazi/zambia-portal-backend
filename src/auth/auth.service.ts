@@ -86,6 +86,8 @@ export class AuthService {
       },
     );
 
+    console.log('Before sending mail');
+
     try {
       await this.mailService.sendVerificationEmail(result.user.email, token);
       console.log({ message: 'Email sent' });
@@ -93,6 +95,13 @@ export class AuthService {
       console.error('Something wrong with the mail service!', err);
       throw err;
     }
+
+    console.log('Returning:', {
+      message:
+        'Registration successful. Please check your email to verify your account.',
+      email: result.user.email,
+      createdAt: result.owner.createdAt,
+    });
 
     return {
       message:
