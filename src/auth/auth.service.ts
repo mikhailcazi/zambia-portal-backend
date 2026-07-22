@@ -4,11 +4,36 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { UserWithRelations } from 'src/users/users.types';
 import { CreateProjectOwnerDto } from 'src/project-owner/dto/create-project-owner.dto';
-import { randomBytes } from 'crypto';
-import { UserRole } from '@prisma/client';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { $Enums, Prisma, UserRole } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
 
+interface PrismaTxnResult {
+  user: {
+    email: string;
+    password: string;
+    role: $Enums.UserRole;
+    createdAt: Date;
+    lastLoginAt: Date | null;
+    isVerified: boolean;
+    deletedAt: Date | null;
+    id: number;
+  };
+  owner: {
+    createdAt: Date;
+    id: number;
+    name: string;
+    organization: string;
+    location: string | null;
+    position: string | null;
+    updatedAt: Date;
+    userId: number;
+  };
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -55,28 +80,43 @@ export class AuthService {
       10,
     );
 
-    const result = await this.prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: createProjectOwnerDto.email,
-          password: hashedPassword,
-          role: UserRole.USER,
-          isVerified: false,
-        },
-      });
+    let result: PrismaTxnResult;
 
-      const owner = await tx.projectOwner.create({
-        data: {
-          userId: user.id,
-          name: createProjectOwnerDto.name,
-          organization: createProjectOwnerDto.organization,
-          location: createProjectOwnerDto.location,
-          position: createProjectOwnerDto.position,
-        },
-      });
+    try {
+      result = await this.prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: {
+            email: createProjectOwnerDto.email,
+            password: hashedPassword,
+            role: UserRole.USER,
+            isVerified: false,
+          },
+        });
 
-      return { user, owner };
-    });
+        const owner = await tx.projectOwner.create({
+          data: {
+            userId: user.id,
+            name: createProjectOwnerDto.name,
+            organization: createProjectOwnerDto.organization,
+            location: createProjectOwnerDto.location,
+            position: createProjectOwnerDto.position,
+          },
+        });
+
+        return { user, owner };
+      });
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          'An account with this email already exists.',
+        );
+      }
+
+      throw new InternalServerErrorException('Failed to create your account.');
+    }
 
     const token = this.jwtService.sign(
       { userId: result.user.id, email: result.user.email },
@@ -86,22 +126,14 @@ export class AuthService {
       },
     );
 
-    console.log('Before sending mail');
-
-    try {
-      await this.mailService.sendVerificationEmail(result.user.email, token);
-      console.log({ message: 'Email sent' });
-    } catch (err) {
-      console.error('Something wrong with the mail service!', err);
-      throw err;
-    }
-
-    console.log('Returning:', {
-      message:
-        'Registration successful. Please check your email to verify your account.',
-      email: result.user.email,
-      createdAt: result.owner.createdAt,
-    });
+    this.mailService
+      .sendVerificationEmail(result.user.email, token)
+      .catch((err) => {
+        console.error(
+          `Failed to send verification email to ${result.user.email}`,
+          err,
+        );
+      });
 
     return {
       message:
