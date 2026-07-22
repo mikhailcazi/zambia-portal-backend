@@ -31,8 +31,8 @@ export class AuthController {
   }
 
   @Post('resend-email')
-  resendLink(@Body('token') token: string) {
-    return this.authService.resendEmail(token);
+  resendLink(@Body('email') email: string) {
+    return this.authService.resendEmail(email);
   }
   // @Post('logout')
   // logout() {

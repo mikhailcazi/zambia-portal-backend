@@ -21,9 +21,11 @@ export class UserLocalStrategy extends PassportStrategy(
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     } else if (user.role === UserRole.USER && !user.isVerified) {
-      throw new UnauthorizedException(
-        'Your account has not been verified. Please check your email inbox for the verification link.',
-      );
+      throw new UnauthorizedException({
+        message:
+          'Your account has not been verified. Please check your email inbox for the verification link.',
+        code: 'NEEDS_VERIFICATION',
+      });
     }
 
     return user;

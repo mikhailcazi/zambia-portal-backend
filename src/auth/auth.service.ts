@@ -152,9 +152,15 @@ export class AuthService {
       });
     } catch (error) {
       if (error instanceof TokenExpiredError) {
+        const decoded = this.jwtService.decode<{
+          userId: number;
+          email: string;
+        } | null>(token);
+
         throw new BadRequestException({
           code: 'TOKEN_EXPIRED',
           message: 'This verification link has expired.',
+          email: decoded?.email,
         });
       }
 
@@ -190,29 +196,24 @@ export class AuthService {
     };
   }
 
-  async resendEmail(token: string) {
-    const payload: { userId: number; email: string } =
-      this.jwtService.decode(token);
-
-    console.log(payload);
-
+  async resendEmail(email: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: payload.userId },
+      where: { email },
     });
 
     if (!user) {
-      throw new BadRequestException('Invalid verification link.');
+      throw new BadRequestException('Invalid email ID.');
     }
 
     const newToken = this.jwtService.sign(
-      { userId: payload.userId, email: payload.email },
+      { userId: user.id, email: email },
       {
         secret: process.env.EMAIL_VERIFICATION_SECRET,
         expiresIn: '24h',
       },
     );
 
-    await this.mailService.sendVerificationEmail(payload.email, newToken);
+    await this.mailService.sendVerificationEmail(email, newToken);
 
     console.log({ message: 'Email sent' });
 
