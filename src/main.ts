@@ -12,6 +12,7 @@ async function bootstrap() {
       'https://zambiagreeninvestmentportal.vercel.app',
       'http://localhost:5173',
       'http://pilot-uat.seczambia.org.zm:5173',
+      'https://pilot-uat.seczambia.org.zm',
     ],
     credentials: true,
   });
