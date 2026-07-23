@@ -113,6 +113,8 @@ model Proposal {
   techStudies         Json?
   other               Json?
 
+  additionalDocuments Json?
+
   signedName String
   position   String
 
@@ -176,6 +178,8 @@ model Project {
   partnerships        Json?
   techStudies         Json?
   other               Json?
+
+  additionalDocuments Json?
 
   signedName String
   position   String

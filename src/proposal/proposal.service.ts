@@ -154,6 +154,7 @@ export class ProposalService {
           partnerships: proposal.partnerships ?? [],
           techStudies: proposal.techStudies ?? [],
           other: proposal.other ?? [],
+          additionalDocuments: proposal.additionalDocuments ?? [],
         },
       });
 
@@ -247,5 +248,25 @@ export class ProposalService {
       size: file.size,
       mimetype: file.mimetype,
     };
+  }
+
+  async addDocuments(proposalId: string, document: object, userId: number) {
+    const proposal = await this.prisma.proposal.findUnique({
+      where: { id: proposalId },
+    });
+
+    if (!proposal) {
+      throw new NotFoundException('Proposal not found');
+    }
+
+    return this.prisma.proposal.update({
+      where: { id: proposalId },
+      data: {
+        additionalDocuments: [
+          ...((proposal.additionalDocuments as object[]) ?? []),
+          document,
+        ],
+      },
+    });
   }
 }
